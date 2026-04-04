@@ -39,7 +39,7 @@ The project is intentionally compact, so the control flow, tool model, and TUI b
 ## Multi-language Versions
 
 - TypeScript (this repo): [MiniCode](https://github.com/LiuMengxuan04/MiniCode)
-- Rust version: [MiniCode-rs](https://github.com/harkerhand/MiniCode-rs)
+- Rust version: [MiniCode-rs (latest)](https://github.com/harkerhand/MiniCode-rs/releases/latest)
 - Python version: coming soon
 
 ## Table of Contents

@@ -1,692 +1,1133 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MiniCode | 终端编码助手产品介绍</title>
-    <meta
-      name="description"
-      content="MiniCode 是一个面向本地开发工作流的轻量终端编码助手，强调 model-tool-loop、安全审批、Skills 与 MCP 扩展能力。"
-    />
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap");
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="page_title">MiniCode | AI-powered terminal coding assistant</title>
+  <meta name="description" content="MiniCode is a lightweight terminal coding assistant for local development workflows. Model-tool-loop, secure approvals, Skills & MCP.">
+  
+  <!-- Typography: Editorial Serif + Clean Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Premium Editorial / Modern Tech Light Theme */
+    :root {
+      /* Colors */
+      --bg-base: #FBF9F6;       /* Warm off-white */
+      --bg-surface: #FFFFFF;    /* Pure white cards */
+      --bg-elevated: #F4F2EC;   /* Slightly darker than base for contrast blocks */
+      
+      --border-light: rgba(0, 0, 0, 0.06);
+      --border-medium: rgba(0, 0, 0, 0.12);
+      
+      --text-primary: #121212;  /* Almost black */
+      --text-secondary: #5C5C59; /* Warm gray */
+      --text-tertiary: #8A8A85;
+      
+      --accent: #D05B43;        /* Terracotta / Orange */
+      --accent-hover: #B54E38;
+      
+      /* Typography */
+      --font-sans: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      
+      /* Radii */
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-full: 999px;
 
-      :root {
-        --bg: #efe8db;
-        --bg-2: #f8f4ec;
-        --ink: #141414;
-        --muted: #5a5a5a;
-        --line: rgba(20, 20, 20, 0.14);
-        --card: rgba(255, 255, 255, 0.8);
-        --accent: #e5532c;
-        --accent-2: #1a8969;
-        --accent-3: #1f63c9;
-        --radius: 18px;
-      }
+      /* Shadows */
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 24px 48px rgba(0, 0, 0, 0.08);
+      --shadow-float: 0 32px 64px -12px rgba(0, 0, 0, 0.1);
+    }
 
-      * {
-        box-sizing: border-box;
-      }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      html {
-        scroll-behavior: smooth;
-      }
+    html {
+      scroll-behavior: smooth;
+    }
 
-      body {
-        margin: 0;
-        color: var(--ink);
-        font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-        line-height: 1.6;
-        background:
-          radial-gradient(circle at 12% -15%, #ffd5b4 0%, transparent 35%),
-          radial-gradient(circle at 88% 8%, #d4f0e6 0%, transparent 30%),
-          linear-gradient(155deg, var(--bg) 0%, var(--bg-2) 100%);
-      }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      letter-spacing: -0.01em;
+    }
 
-      .container {
-        max-width: 1140px;
-        margin: 0 auto;
-        padding: 22px;
-      }
+    ::selection {
+      background: rgba(208, 91, 67, 0.2);
+      color: var(--text-primary);
+    }
 
-      .topbar {
-        display: flex;
-        gap: 14px;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 18px;
-      }
+    /* Ambient Gradient (subtle) */
+    .ambient-mesh {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none; z-index: -1;
+      background: 
+        radial-gradient(ellipse at top left, rgba(208, 91, 67, 0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
+    }
 
-      .brand {
-        font-family: "Space Grotesk", sans-serif;
-        font-size: 1.42rem;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-      }
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+    }
 
-      .badge {
-        font-size: 0.82rem;
-        padding: 5px 10px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        color: var(--muted);
-        background: rgba(255, 255, 255, 0.66);
-      }
+    /* Navigation */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      background: rgba(251, 249, 246, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s ease;
+    }
 
-      .quick-nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 22px;
-      }
+    .navbar.scrolled {
+      border-bottom-color: var(--border-light);
+    }
 
-      .quick-nav a {
-        text-decoration: none;
-        color: var(--ink);
-        font-size: 0.9rem;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.56);
-        border-radius: 999px;
-        padding: 7px 12px;
-      }
+    .brand {
+      font-weight: 600;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: -0.02em;
+    }
 
-      .quick-nav a:hover {
-        border-color: var(--ink);
-      }
+    .brand svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+    }
 
-      .hero {
-        border: 1px solid rgba(255, 255, 255, 0.45);
-        border-radius: 28px;
-        background: var(--card);
-        backdrop-filter: blur(4px);
-        padding: 46px 34px;
-        box-shadow: 0 24px 54px rgba(31, 18, 8, 0.08);
-      }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+      overflow-x: auto;
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    
+    .nav-links::-webkit-scrollbar {
+      display: none;
+    }
 
-      h1,
-      h2,
-      h3 {
-        margin: 0;
-      }
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
 
-      h1 {
-        font-family: "Space Grotesk", sans-serif;
-        font-size: clamp(2.1rem, 5vw, 3.9rem);
-        line-height: 1.05;
-        margin-bottom: 16px;
-      }
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+    
+    .lang-toggle {
+      background: rgba(0,0,0,0.04);
+      border: none;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    
+    .lang-toggle:hover {
+      background: rgba(0,0,0,0.08);
+    }
 
-      .hero p {
-        margin: 0;
-        max-width: 820px;
-        font-size: 1.05rem;
-      }
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
 
-      .hero-actions {
-        margin-top: 24px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
+    .btn-primary {
+      background: var(--text-primary);
+      color: #fff;
+      border: 1px solid var(--text-primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
 
-      .btn {
-        text-decoration: none;
-        border-radius: 14px;
-        padding: 11px 16px;
-        font-weight: 700;
-        border: 1px solid transparent;
-      }
+    .btn-primary:hover {
+      background: #333;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
 
-      .btn-primary {
-        background: #111;
-        color: #fff;
-      }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border-medium);
+    }
 
-      .btn-secondary {
-        border-color: var(--line);
-        color: #111;
-        background: rgba(255, 255, 255, 0.6);
-      }
+    .btn-secondary:hover {
+      background: var(--bg-surface);
+      border-color: var(--text-primary);
+    }
 
-      .facts {
-        margin-top: 24px;
-        display: grid;
-        gap: 12px;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
+    /* Hero Section */
+    .hero {
+      padding: 100px 0 80px;
+      text-align: center;
+      max-width: 860px;
+      margin: 0 auto;
+    }
 
-      .fact {
-        background: rgba(255, 255, 255, 0.66);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 12px;
-      }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      background: rgba(208, 91, 67, 0.08);
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 32px;
+    }
 
-      .fact strong {
-        display: block;
-        font-family: "Space Grotesk", sans-serif;
-        font-size: 1.25rem;
-      }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(3rem, 6vw, 4.5rem);
+      line-height: 1.05;
+      font-weight: 400; /* Serif looks elegant when lighter */
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+    
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
 
-      section {
-        margin-top: 54px;
-      }
+    .hero p {
+      font-size: clamp(1.1rem, 2vw, 1.25rem);
+      color: var(--text-secondary);
+      margin: 0 auto 48px;
+      max-width: 680px;
+      line-height: 1.6;
+    }
 
-      section h2 {
-        font-family: "Space Grotesk", sans-serif;
-        font-size: clamp(1.55rem, 3vw, 2.15rem);
-        margin-bottom: 10px;
-      }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
 
-      .intro {
-        margin: 0 0 18px;
-        color: var(--muted);
-      }
+    /* Terminal Window / Visual */
+    .showcase {
+      margin: 0 auto 100px;
+      max-width: 960px; /* Wider to fit 3 panels */
+      position: relative;
+    }
 
-      .grid-3 {
-        display: grid;
-        gap: 14px;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
+    .terminal-window {
+      background: #0f1115; /* Terminal dark mode */
+      border-radius: var(--radius-md);
+      padding: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-float);
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-      .grid-2 {
-        display: grid;
-        gap: 14px;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+    /* Common Card Styling for Terminal Panels */
+    .t-panel {
+      border: 1px solid #165c6b;
+      border-radius: 4px;
+      padding: 12px 16px;
+      position: relative;
+    }
 
-      .card {
-        border: 1px solid var(--line);
-        border-radius: var(--radius);
-        background: var(--card);
-        padding: 18px;
-      }
+    .t-panel-title {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      color: #5c7080;
+      font-size: 0.75rem;
+    }
 
-      .card h3 {
-        margin-bottom: 8px;
-        font-size: 1.03rem;
-      }
+    /* Top Panel: Header/Stats */
+    .t-header-title { color: #e2e8f0; font-weight: 500; margin-bottom: 8px; }
+    .t-header-desc { color: #8b949e; margin-bottom: 12px; }
+    .t-stats-line { color: #8b949e; }
+    .t-stats-label { color: #38bdf8; margin-right: 4px; }
+    .t-stats-value { color: #e2e8f0; font-weight: 500; margin-right: 12px; }
+    .t-stats-value.green { color: #4ade80; }
+    .t-cwd { color: #5c7080; margin-top: 4px; font-size: 0.8rem; }
 
-      .card p {
-        margin: 0;
-      }
+    /* Middle Panel: Session Feed */
+    .t-feed-title { color: #38bdf8; margin-bottom: 12px; font-weight: 500; }
+    .t-role { color: #4ade80; font-weight: 500; margin-bottom: 4px; }
+    .t-message { color: #e2e8f0; margin-bottom: 12px; }
+    .t-list { list-style: none; margin-bottom: 16px; }
+    .t-list li { margin-bottom: 4px; display: flex; align-items: flex-start; gap: 8px; }
+    .t-list-icon { font-size: 0.9rem; }
 
-      .list {
-        margin: 0;
-        padding-left: 18px;
-      }
+    /* Bottom Panel: Prompt */
+    .t-prompt-title { color: #38bdf8; margin-bottom: 12px; font-weight: 500; }
+    .t-prompt-hints { color: #8b949e; margin-bottom: 12px; }
+    .t-prompt-hints strong { color: #d08770; font-weight: normal; }
+    .t-input-line { display: flex; align-items: center; gap: 8px; }
+    .t-input-prompt { color: #4ade80; font-weight: 500; }
+    .t-input-cursor { 
+      display: inline-block; 
+      width: 8px; 
+      height: 14px; 
+      background: #e2e8f0; 
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+    }
+    
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
 
-      .list li + li {
-        margin-top: 4px;
-      }
+    .t-footer-bar {
+      display: flex;
+      justify-content: space-between;
+      color: #5c7080;
+      font-size: 0.75rem;
+      padding: 0 4px;
+    }
+    .t-footer-right span { color: #4ade80; }
 
-      .tools-wrap {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
+    /* Logo/Brands Strip */
+    .logo-strip {
+      padding: 40px 0;
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      text-align: center;
+      margin-bottom: 100px;
+    }
+    .logo-strip p {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-tertiary);
+      margin-bottom: 24px;
+    }
+    .logo-strip-flex {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+    }
 
-      .tool {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-        font-size: 0.86rem;
-        padding: 6px 10px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.7);
-      }
+    /* Typography Sections */
+    section {
+      padding: 80px 0;
+    }
 
-      .steps {
-        display: grid;
-        gap: 10px;
-      }
+    .section-header {
+      margin-bottom: 60px;
+      max-width: 600px;
+    }
 
-      .step {
-        border-left: 4px solid var(--accent);
-        padding: 10px 13px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.73);
-      }
+    .section-header h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 3.5vw, 2.5rem);
+      font-weight: 400;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
 
-      .step:nth-child(2) {
-        border-left-color: #f28f3d;
-      }
+    .section-header p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
 
-      .step:nth-child(3) {
-        border-left-color: var(--accent-2);
-      }
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 24px;
+    }
 
-      .step:nth-child(4) {
-        border-left-color: var(--accent-3);
-      }
+    .feature-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
 
-      .code {
-        margin: 10px 0 0;
-        background: #141414;
-        color: #f6f6f6;
-        border-radius: 12px;
-        padding: 12px;
-        overflow: auto;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-        font-size: 0.84rem;
-      }
+    .feature-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--border-medium);
+      transform: translateY(-2px);
+    }
 
-      .roadmap {
-        display: grid;
-        gap: 12px;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
 
-      .tier {
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 16px;
-        background: var(--card);
-      }
+    @media (max-width: 900px) {
+      .span-4, .span-6, .span-8 { grid-column: span 12; }
+    }
 
-      .tier h3 {
-        margin-bottom: 8px;
-      }
+    .feature-icon {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
 
-      .tier.p0 h3 {
-        color: #b63a1f;
-      }
+    .feature-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
 
-      .tier.p1 h3 {
-        color: #116c53;
-      }
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
 
-      .tier.p2 h3 {
-        color: #1f4faa;
-      }
+    .feature-list {
+      list-style: none;
+      margin-top: 24px;
+    }
 
-      .links {
-        display: grid;
-        gap: 10px;
-      }
+    .feature-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+    }
 
-      .links a {
-        color: #083470;
-        text-decoration: none;
-      }
+    .feature-list li:last-child { border-bottom: none; }
 
-      .star {
-        margin-top: 14px;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        overflow: hidden;
-        background: #fff;
-      }
+    .feature-list li::before {
+      content: "";
+      display: block;
+      width: 6px; height: 6px;
+      background: var(--text-tertiary);
+      border-radius: 50%;
+      margin-right: 12px;
+    }
 
-      .star img {
-        width: 100%;
-        display: block;
-      }
+    /* Tools Tags */
+    .tools-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
 
-      .footer {
-        margin: 42px 0 12px;
-        font-size: 0.9rem;
-        color: var(--muted);
-      }
+    .tool-tag {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-full);
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+    
+    .tool-tag:hover {
+      color: var(--text-primary);
+      border-color: var(--text-primary);
+      background: var(--bg-surface);
+    }
 
-      @media (max-width: 960px) {
-        .facts {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
+    /* Architecture List */
+    .arch-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-        .grid-3,
-        .roadmap {
-          grid-template-columns: 1fr;
-        }
+    .arch-item {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      padding: 24px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      transition: background 0.2s ease;
+    }
+    
+    .arch-item:hover {
+      background: var(--bg-elevated);
+    }
 
-        .grid-2 {
-          grid-template-columns: 1fr;
-        }
-      }
+    .arch-item code {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      font-weight: 500;
+      min-width: 180px;
+    }
 
-      @media (max-width: 620px) {
-        .hero {
-          padding: 34px 20px;
-        }
+    .arch-item p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin: 0;
+    }
 
-        .facts {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="container">
-      <div class="topbar">
-        <div class="brand">MiniCode</div>
-        <span class="badge">Lightweight Claude Code-style Runtime</span>
+    @media (max-width: 600px) {
+      .arch-item { flex-direction: column; gap: 8px; }
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-medium);
+      padding: 80px 0;
+      margin-top: 80px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    }
+
+    .footer-brand h4 {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-brand p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      max-width: 280px;
+    }
+
+    .footer-col h5 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+
+    .footer-col a {
+      display: block;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--accent);
+    }
+
+    .star-img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+      margin-top: 40px;
+    }
+
+    /* Animation Utilities */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .delay-100 { transition-delay: 100ms; }
+    .delay-200 { transition-delay: 200ms; }
+    .delay-300 { transition-delay: 300ms; }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Background -->
+  <div class="ambient-mesh"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container" style="display: flex; justify-content: space-between; align-items: center; gap: 48px;">
+      <div class="brand" style="flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>
+        MiniCode
+      </div>
+      <div class="nav-links">
+        <a href="#features" data-i18n="nav_features">Features</a>
+        <a href="#architecture" data-i18n="nav_arch">Architecture</a>
+        <button id="langToggle" class="lang-toggle">EN / 中</button>
+        <a href="https://github.com/LiuMengxuan04/MiniCode" target="_blank" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;" data-i18n="nav_github">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    
+    <!-- Hero Section -->
+    <header class="hero container">
+      <div class="hero-badge fade-up" data-i18n="badge_beta">
+        MiniCode Beta 1.0 is available
+      </div>
+      <h1 class="fade-up delay-100" data-i18n="hero_h1" data-html="true">
+        AI-powered coding assistant <br>
+        built for <em>developers</em>
+      </h1>
+      <p class="fade-up delay-200" data-i18n="hero_desc">
+        Work with large language models directly in your terminal. Build, debug, and ship with an execution loop that keeps you in control. Describe what you need, and MiniCode handles the tools.
+      </p>
+      <div class="hero-actions fade-up delay-300">
+        <a class="btn btn-primary" href="https://github.com/LiuMengxuan04/MiniCode" target="_blank" data-i18n="btn_github">
+          View on GitHub
+        </a>
+        <a id="btn_readme" class="btn btn-secondary" href="https://github.com/LiuMengxuan04/MiniCode/blob/main/README.md" target="_blank" data-i18n="btn_readme">
+          Read Documentation
+        </a>
+      </div>
+    </header>
+
+    <!-- Terminal Showcase -->
+    <div class="showcase container fade-up delay-300">
+      <div class="terminal-window">
+        <!-- Top Panel: Header -->
+        <div class="t-panel">
+          <div class="t-panel-title">api.minimaxi.com</div>
+          <div class="t-header-title">MiniCode</div>
+          <div class="t-header-desc" data-i18n="t_header_desc">Terminal coding assistant with a card-style session layout.</div>
+          
+          <div class="t-stats-line">
+            <span class="t-stats-label">mini-code</span> <span class="t-stats-value">~/code/mini-code</span>
+            <span class="t-stats-label">[session]</span> <span class="t-stats-value">local</span>
+            <span class="t-stats-label">[provider]</span> <span class="t-stats-value">api.minimaxi.com</span>
+            <span class="t-stats-label">[model]</span> <span class="t-stats-value">MiniMax-M2.7</span>
+            <span class="t-stats-label">[messages]</span> <span class="t-stats-value">3</span>
+            <span class="t-stats-label">[events]</span> <span class="t-stats-value">2</span>
+            <span class="t-stats-label">[skills]</span> <span class="t-stats-value green">13</span>
+            <span class="t-stats-label">[mcp]</span> <span class="t-stats-value">1</span>
+          </div>
+          <div class="t-cwd">cwd: ~/code/mini-code | extra allowed dirs: ~/code/claude-code, ~/cod...</div>
+        </div>
+
+        <!-- Middle Panel: Session Feed -->
+        <div class="t-panel">
+          <div class="t-panel-title" data-i18n="t_events">2 events</div>
+          <div class="t-feed-title" data-i18n="t_feed">session feed</div>
+          <div class="t-message" style="color: #5c7080;">.</div>
+          
+          <div class="t-role" data-i18n="t_role">assistant</div>
+          <div class="t-message" data-i18n="t_hello" data-html="true">Hello! 👋<br><br>I'm mini-code, your terminal coding assistant. I can help you with:</div>
+          <ul class="t-list">
+            <li><span class="t-list-icon">🔍</span> <span data-i18n="t_l1">Inspecting code and repositories</span></li>
+            <li><span class="t-list-icon">📝</span> <span data-i18n="t_l2">Writing, editing, and modifying files</span></li>
+            <li><span class="t-list-icon">🔨</span> <span data-i18n="t_l3">Running development commands</span></li>
+            <li><span class="t-list-icon">🖼️</span> <span data-i18n="t_l4">Generating images (with MiniMax AI)</span></li>
+            <li><span class="t-list-icon">📄</span> <span data-i18n="t_l5">Working with various file formats (PDF, DOCX, XLSX, PPTX)</span></li>
+            <li><span class="t-list-icon">🎯</span> <span data-i18n="t_l6">Following skill workflows (frontend-dev, fullstack-dev, flutter-dev, etc.)</span></li>
+          </ul>
+          <div class="t-message" data-i18n="t_ask">What would you like to work on today?</div>
+        </div>
+
+        <!-- Bottom Panel: Prompt -->
+        <div class="t-panel">
+          <div class="t-prompt-title" data-i18n="t_prompt">prompt</div>
+          <div class="t-prompt-hints" data-i18n="t_hints" data-html="true">
+            <strong>prompt</strong> Enter send | /help commands | Esc clear | Ctrl+C exit
+          </div>
+          <div class="t-input-line">
+            <span class="t-input-prompt">mini-code&gt;</span>
+            <span style="color: #8b949e;" data-i18n="t_input">Ask for code, files, tasks, or MCP tools</span><span class="t-input-cursor"></span>
+          </div>
+        </div>
+
+        <!-- Footer Bar -->
+        <div class="t-footer-bar">
+          <div data-i18n="t_ready">Ready</div>
+          <div class="t-footer-right" data-i18n="t_tools" data-html="true">tools <span>on</span> | skills <span>on</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech Strip -->
+    <div class="logo-strip">
+      <div class="container">
+        <p data-i18n="tech_strip">Built with modern architectures</p>
+        <div class="logo-strip-flex">
+          <span data-i18n="tech_1">Model-Tool-Loop</span>
+          <span data-i18n="tech_2">Terminal UI</span>
+          <span data-i18n="tech_3">MCP Protocol</span>
+          <span data-i18n="tech_4">Diff Review</span>
+          <span data-i18n="tech_5">Local Skills</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Why MiniCode Section -->
+    <section id="why" class="container" style="padding-top: 0; padding-bottom: 80px;">
+      <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 56px; box-shadow: var(--shadow-md); position: relative; overflow: hidden;">
+        <!-- Decorative Background Circle -->
+        <div style="position: absolute; top: -50%; right: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(208,91,67,0.05) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+        
+        <div style="position: relative; z-index: 1;">
+          <h2 data-i18n="why_title" style="font-family: var(--font-serif); font-size: 2.2rem; font-weight: 400; margin-bottom: 20px; color: var(--text-primary);">Inspired by Claude Code</h2>
+          <p data-i18n="why_desc" style="font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 40px; line-height: 1.7; max-width: 640px;">
+            MiniCode is designed as an architectural reference implementation. It intentionally strips away bloated platform features to focus entirely on the core AI-developer interaction loop. It is the perfect fit if you are looking for:
+          </p>
+          
+          <div class="grid" style="row-gap: 32px;">
+            <div class="span-6">
+              <h3 data-i18n="why_1_h" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">A lightweight assistant</h3>
+              <p data-i18n="why_1_p" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">Instead of a heavy IDE platform, getting a standalone assistant focused purely on the coding workflow.</p>
+            </div>
+            <div class="span-6">
+              <h3 data-i18n="why_2_h" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Clean terminal UI</h3>
+              <p data-i18n="why_2_p" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">Native tool calling, transcript scrolling, and complete command workflows without leaving the terminal.</p>
+            </div>
+            <div class="span-6">
+              <h3 data-i18n="why_3_h" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Readable codebase</h3>
+              <p data-i18n="why_3_p" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">A minimal project structure extremely suitable for reading, secondary development, and private customization.</p>
+            </div>
+            <div class="span-6">
+              <h3 data-i18n="why_4_h" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">Reference architecture</h3>
+              <p data-i18n="why_4_p" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">For learning how modern AI agent loops (like Claude Code) are built under the hood.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="container">
+      <div class="section-header fade-up">
+        <h2 data-i18n="feat_title">Meets you where you code</h2>
+        <p data-i18n="feat_desc">A minimalist design focusing on the core tool-calling execution loop, providing safety and high extensibility.</p>
       </div>
 
-      <nav class="quick-nav">
-        <a href="#features">功能特性</a>
-        <a href="#tools">工具列表</a>
-        <a href="#commands">命令与配置</a>
-        <a href="#architecture">架构设计</a>
-        <a href="#roadmap">路线图</a>
-        <a href="#contrib">贡献方式</a>
-        <a href="#resources">文档资源</a>
-      </nav>
-
-      <header class="hero">
-        <h1>把终端 AI 编码助手做“小”，但把主闭环做“全”</h1>
-        <p>
-          MiniCode 是一个面向本地开发工作流的轻量终端编码助手。它专注保留最关键的执行路径：
-          <strong>model -> tool -> model</strong> 主循环、可审阅的文件修改流程、权限审批边界、可扩展的 Skills 与 MCP。
-          相比重型平台，MiniCode 更适合作为学习样本、实验底座和二次开发起点。
-        </p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="https://github.com/LiuMengxuan04/MiniCode">访问 GitHub 仓库</a>
-          <a class="btn btn-secondary" href="https://github.com/LiuMengxuan04/MiniCode/blob/main/README.zh-CN.md">阅读中文 README</a>
-          <a class="btn btn-secondary" href="https://github.com/LiuMengxuan04/MiniCode/blob/main/README.md">Read README (EN)</a>
+      <div class="grid">
+        
+        <div class="feature-card span-6 fade-up">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <h3 data-i18n="feat_1_title">Core execution loop</h3>
+          <p data-i18n="feat_1_desc" data-html="true">MiniCode manages a full multi-step tool execution loop (<code>model -> tool -> model</code>) in a single turn, providing seamless context processing without leaving the terminal.</p>
+          <ul class="feature-list">
+            <li data-i18n="feat_1_l1">Full-screen TUI with transcript scrolling</li>
+            <li data-i18n="feat_1_l2">Separation of progress and final answers</li>
+            <li data-i18n="feat_1_l3">Feedback injection upon rejection</li>
+          </ul>
         </div>
-        <div class="facts">
-          <div class="fact">
-            <strong>13+</strong>
-            内置工具（含 MCP helper）
-          </div>
-          <div class="fact">
-            <strong>Terminal-first</strong>
-            全屏 TUI 与会话 transcript
-          </div>
-          <div class="fact">
-            <strong>Review-before-write</strong>
-            写入前统一 diff 审批
-          </div>
-          <div class="fact">
-            <strong>Skills + MCP</strong>
-            本地工作流与外部能力扩展
-          </div>
-        </div>
-      </header>
 
-      <section id="features">
-        <h2>功能特性（基于项目文档整理）</h2>
-        <p class="intro">从 README、ARCHITECTURE 与 PATTERNS 文档提炼的核心能力与设计方向。</p>
-        <div class="grid-3">
-          <article class="card">
-            <h3>核心工作流</h3>
-            <ul class="list">
-              <li>单轮支持多步工具执行</li>
-              <li>模型与工具闭环：model -> tool -> model</li>
-              <li>全屏终端交互、输入历史与 transcript 滚动</li>
-              <li>progress 状态与 final 回复分离建模</li>
-            </ul>
-          </article>
-          <article class="card">
-            <h3>安全与可控</h3>
-            <ul class="list">
-              <li>文件修改前统一展示 unified diff</li>
-              <li>路径权限与命令权限检查</li>
-              <li>命令执行与编辑审批在主执行路径内</li>
-              <li>支持拒绝并向模型反馈修正建议</li>
-            </ul>
-          </article>
-          <article class="card">
-            <h3>扩展能力</h3>
-            <ul class="list">
-              <li>本地 SKILL.md 发现与 load_skill</li>
-              <li>stdio MCP server 动态接入</li>
-              <li>MCP tools/resources/prompts 通用访问</li>
-              <li>兼容 Content-Length / newline-json framing</li>
-            </ul>
-          </article>
+        <div class="feature-card span-6 fade-up delay-100">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 data-i18n="feat_2_title">You're in control</h3>
+          <p data-i18n="feat_2_desc">Safety shouldn't be an afterthought. MiniCode brings permission validation and code review straight into the primary execution pathway.</p>
+          <ul class="feature-list">
+            <li data-i18n="feat_2_l1">Standard Unified Diff view before writing</li>
+            <li data-i18n="feat_2_l2">Path and command allowlist verification</li>
+            <li data-i18n="feat_2_l3">Interception of dangerous actions</li>
+          </ul>
         </div>
-      </section>
 
-      <section id="tools">
-        <h2>内置工具清单</h2>
-        <p class="intro">本地工具和 MCP helper 工具走统一协议与注册入口。</p>
-        <div class="card">
-          <div class="tools-wrap">
-            <span class="tool">list_files</span>
-            <span class="tool">grep_files</span>
-            <span class="tool">read_file</span>
-            <span class="tool">write_file</span>
-            <span class="tool">edit_file</span>
-            <span class="tool">patch_file</span>
-            <span class="tool">modify_file</span>
-            <span class="tool">run_command</span>
-            <span class="tool">ask_user</span>
-            <span class="tool">load_skill</span>
-            <span class="tool">list_mcp_resources</span>
-            <span class="tool">read_mcp_resource</span>
-            <span class="tool">list_mcp_prompts</span>
-            <span class="tool">get_mcp_prompt</span>
+        <div class="feature-card span-4 fade-up">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg>
+          </div>
+          <h3 data-i18n="feat_3_title">Skills & MCP</h3>
+          <p data-i18n="feat_3_desc" data-html="true">Extend capabilities endlessly. MiniCode discovers local <code>SKILL.md</code> instructions and seamlessly mounts stdio Model Context Protocol (MCP) servers.</p>
+        </div>
+
+        <div class="feature-card span-8 fade-up delay-100">
+          <h3 data-i18n="feat_4_title">Built-in Toolchain</h3>
+          <p data-i18n="feat_4_desc">Local file system management, command execution, and MCP helpers are centralized through a standardized tool protocol, ready to be called by the model at any time.</p>
+          <div class="tools-flex">
+            <span class="tool-tag">list_files</span>
+            <span class="tool-tag">grep_files</span>
+            <span class="tool-tag">read_file</span>
+            <span class="tool-tag">write_file</span>
+            <span class="tool-tag">edit_file</span>
+            <span class="tool-tag">patch_file</span>
+            <span class="tool-tag">run_command</span>
+            <span class="tool-tag">load_skill</span>
+            <span class="tool-tag">list_mcp_resources</span>
+            <span class="tool-tag">get_mcp_prompt</span>
           </div>
         </div>
-      </section>
 
-      <section>
-        <h2>一轮任务如何执行</h2>
-        <p class="intro">把权限与审阅放进执行链路，而不是后置补丁。</p>
-        <div class="steps">
-          <div class="step"><strong>1.</strong> 接收用户请求并组织当前上下文</div>
-          <div class="step"><strong>2.</strong> 模型决定是否调用工具并执行</div>
-          <div class="step"><strong>3.</strong> 工具结果回传模型继续推理</div>
-          <div class="step"><strong>4.</strong> 涉及写入时先 review diff，经审批后落盘</div>
-        </div>
-      </section>
+      </div>
+    </section>
 
-      <section id="commands">
-        <h2>命令与配置速览</h2>
-        <div class="grid-2">
-          <article class="card">
-            <h3>管理命令（CLI）</h3>
-            <ul class="list">
-              <li><code>minicode mcp list</code></li>
-              <li><code>minicode mcp add &lt;name&gt; ...</code></li>
-              <li><code>minicode mcp remove &lt;name&gt; ...</code></li>
-              <li><code>minicode skills list</code></li>
-              <li><code>minicode skills add &lt;path&gt; ...</code></li>
-              <li><code>minicode skills remove &lt;name&gt; ...</code></li>
-            </ul>
-          </article>
-          <article class="card">
-            <h3>交互内 slash 命令</h3>
-            <ul class="list">
-              <li><code>/help</code> / <code>/tools</code> / <code>/skills</code> / <code>/mcp</code></li>
-              <li><code>/status</code> / <code>/model</code> / <code>/model &lt;name&gt;</code></li>
-              <li><code>/config-paths</code></li>
-            </ul>
-            <div class="code">cd mini-code
-npm install
-npm run install-local
-minicode</div>
-          </article>
+    <!-- Architecture Section -->
+    <section id="architecture" style="background-color: var(--bg-surface); padding: 100px 0; margin-top: 40px; border-top: 1px solid var(--border-light);">
+      <div class="container">
+        <div class="section-header fade-up">
+          <h2 data-i18n="arch_title">Architecture</h2>
+          <p data-i18n="arch_desc">MiniCode is not a bloated platform. It's a precisely structured codebase centered around the main execution loop.</p>
         </div>
-        <div class="grid-2" style="margin-top: 14px;">
-          <article class="card">
-            <h3>配置优先级</h3>
-            <ol class="list">
-              <li><code>~/.mini-code/settings.json</code></li>
-              <li><code>~/.mini-code/mcp.json</code></li>
-              <li>项目级 <code>.mcp.json</code></li>
-              <li>兼容的本地已有配置</li>
-              <li>当前进程环境变量</li>
-            </ol>
-          </article>
-          <article class="card">
-            <h3>Skills 默认发现路径</h3>
-            <ul class="list">
-              <li><code>./.mini-code/skills/&lt;skill-name&gt;/SKILL.md</code></li>
-              <li><code>~/.mini-code/skills/&lt;skill-name&gt;/SKILL.md</code></li>
-              <li><code>./.claude/skills/&lt;skill-name&gt;/SKILL.md</code></li>
-              <li><code>~/.claude/skills/&lt;skill-name&gt;/SKILL.md</code></li>
-            </ul>
-          </article>
-        </div>
-      </section>
 
-      <section id="architecture">
-        <h2>架构地图（当前实现）</h2>
-        <p class="intro">MiniCode 不是“大而全”，而是围绕主 loop 与边界能力做结构化裁剪。</p>
-        <div class="grid-3">
-          <article class="card">
-            <h3><code>src/index.ts</code></h3>
-            <p>CLI 入口，负责启动会话与主流程。</p>
-          </article>
-          <article class="card">
-            <h3><code>src/agent-loop.ts</code></h3>
-            <p>多步模型/工具循环，驱动主要执行闭环。</p>
-          </article>
-          <article class="card">
-            <h3><code>src/tool.ts</code></h3>
-            <p>工具注册、参数校验、执行入口与结果归一。</p>
-          </article>
-          <article class="card">
-            <h3><code>src/mcp.ts</code></h3>
-            <p>stdio MCP 连接、协议协商、远端工具封装。</p>
-          </article>
-          <article class="card">
-            <h3><code>src/skills.ts</code></h3>
-            <p>本地 skills 扫描、发现与加载。</p>
-          </article>
-          <article class="card">
-            <h3><code>src/permissions.ts</code> + <code>src/file-review.ts</code></h3>
-            <p>路径/命令/编辑审批与写入前 diff review。</p>
-          </article>
-          <article class="card">
-            <h3><code>src/background-tasks.ts</code></h3>
-            <p>后台 shell task 最小注册表，区分前台工具与后台任务。</p>
-          </article>
-          <article class="card">
-            <h3><code>src/tui/*</code></h3>
-            <p>transcript、input、markdown、screen 等终端 UI 组件。</p>
-          </article>
-          <article class="card">
-            <h3><code>src/manage-cli.ts</code> + <code>src/config.ts</code></h3>
-            <p>MCP/skills 管理命令与运行时配置加载。</p>
-          </article>
+        <div class="arch-list">
+          <div class="arch-item fade-up">
+            <code>src/agent-loop.ts</code>
+            <p data-i18n="arch_1_desc">The core multi-turn tool-calling loop that drives the entire asynchronous conversational logic.</p>
+          </div>
+          <div class="arch-item fade-up delay-100">
+            <code>src/permissions.ts</code>
+            <p data-i18n="arch_2_desc">The security sentinel handling path allowlists, command reviews, and intercepting unauthorized writes.</p>
+          </div>
+          <div class="arch-item fade-up delay-200">
+            <code>src/mcp.ts</code>
+            <p data-i18n="arch_3_desc">The external connector managing MCP client connections and wrapping remote tool functions for local execution.</p>
+          </div>
+          <div class="arch-item fade-up delay-300">
+            <code>src/background-tasks.ts</code>
+            <p data-i18n="arch_4_desc">A minimal registry separating ephemeral foreground tools from persistent background shell tasks (like dev servers).</p>
+          </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section>
-        <h2>通过 MiniCode 可学习的 Claude Code 风格设计</h2>
-        <div class="grid-3">
-          <article class="card">
-            <h3>Loop-first 主结构</h3>
-            <p>把 UI、工具、权限、扩展能力都围绕同一 agent loop 组织。</p>
-          </article>
-          <article class="card">
-            <h3>结构化消息模型</h3>
-            <p>区分 assistant/progress/tool-call/tool-result/context-summary 等状态。</p>
-          </article>
-          <article class="card">
-            <h3>Tool Use 协议化</h3>
-            <p>模型声明、系统校验、统一执行、结果标准化回流。</p>
-          </article>
-          <article class="card">
-            <h3>权限在执行路径内</h3>
-            <p>危险行为通过审批与 review 进入主循环，而非旁路处理。</p>
-          </article>
-          <article class="card">
-            <h3>MCP 动态能力接入</h3>
-            <p>tools/resources/prompts 在会话期动态挂载。</p>
-          </article>
-          <article class="card">
-            <h3>前台工具 vs 后台 shell task</h3>
-            <p>长时命令与普通同步工具区分建模，避免伪装成“永远 running”。</p>
-          </article>
+  </main>
+
+  <!-- Footer -->
+  <footer style="background-color: var(--bg-base); margin-top: 0;">
+    <div class="container">
+      <div class="footer-grid">
+        
+        <div class="footer-brand">
+          <h4>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><path d="M4 17l6-6-6-6"/><path d="M12 19h8"/></svg>
+            MiniCode
+          </h4>
+          <p data-i18n="foot_desc">A lightweight terminal coding assistant for local development workflows. Built for learning, experimentation, and high efficiency.</p>
         </div>
-      </section>
 
-      <section id="roadmap">
-        <h2>路线图优先级</h2>
-        <p class="intro">以下内容来自项目 ROADMAP，按 P0/P1/P2 展示。</p>
-        <div class="roadmap">
-          <article class="tier p0">
-            <h3>P0（优先补齐）</h3>
-            <ul class="list">
-              <li>模型感知上下文管理与压缩</li>
-              <li>API retry / backoff / Retry-After</li>
-              <li>会话持久化与恢复</li>
-              <li>Python / Go / Rust 多语言实现分支探索</li>
-            </ul>
-          </article>
-          <article class="tier p1">
-            <h3>P1（稳定后推进）</h3>
-            <ul class="list">
-              <li>分层 memory 加载</li>
-              <li>更完整 provider abstraction</li>
-              <li>轻量 Todo/task tracking</li>
-              <li><code>.claude/agents</code> 与 sub-agent 支持</li>
-              <li>有选择地扩充核心工具集</li>
-            </ul>
-          </article>
-          <article class="tier p2">
-            <h3>P2（中长期）</h3>
-            <ul class="list">
-              <li>Notebook 编辑支持</li>
-              <li>内置 WebFetch / WebSearch 工具</li>
-              <li>评测与 trace 基建</li>
-              <li>Prompt caching</li>
-            </ul>
-          </article>
+        <div class="footer-col">
+          <h5 data-i18n="foot_prod">Product</h5>
+          <a href="#features" data-i18n="nav_features">Features</a>
+          <a href="#architecture" data-i18n="nav_arch">Architecture</a>
+          <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/ROADMAP.md" target="_blank" data-i18n="nav_roadmap">Roadmap</a>
         </div>
-      </section>
 
-      <section id="contrib">
-        <h2>贡献方式（Contributor Friendly）</h2>
-        <p class="intro">项目欢迎 PR，但强调轻量、可读、可 review 与方向一致性。</p>
-        <div class="grid-2">
-          <article class="card">
-            <h3>贡献原则</h3>
-            <ul class="list">
-              <li>优先小步、聚焦型 PR，避免大重构</li>
-              <li>保持与 Claude Code 设计方向趋同</li>
-              <li>不随意削弱安全边界（审批/权限/review）</li>
-              <li>可读性优先于“技巧化”实现</li>
-              <li>谨慎新增依赖，保持项目轻量</li>
-            </ul>
-          </article>
-          <article class="card">
-            <h3>提交前检查</h3>
-            <ul class="list">
-              <li>行为改动同步更新文档</li>
-              <li>先看 issue，避免重复开发</li>
-              <li>本地执行 <code>npm run check</code></li>
-              <li>PR 描述清楚改动内容、原因和验证方式</li>
-            </ul>
-            <div class="code">npm run check</div>
-          </article>
+        <div class="footer-col">
+          <h5 data-i18n="foot_devs">Developers</h5>
+          <a href="https://github.com/LiuMengxuan04/MiniCode" target="_blank" data-i18n="nav_github">GitHub</a>
+          <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/ARCHITECTURE.md" target="_blank" data-i18n="foot_docs">Documentation</a>
+          <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/CLAUDE_CODE_PATTERNS.md" target="_blank" data-i18n="foot_patterns">Design Patterns</a>
         </div>
-      </section>
 
-      <section id="resources">
-        <h2>文档与资源</h2>
-        <div class="grid-2">
-          <article class="card">
-            <div class="links">
-              <a href="https://github.com/LiuMengxuan04/MiniCode">GitHub Repository</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/README.zh-CN.md">README.zh-CN</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/README.md">README</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/ARCHITECTURE_ZH.md">ARCHITECTURE_ZH</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/ARCHITECTURE.md">ARCHITECTURE</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/ROADMAP_ZH.md">ROADMAP_ZH</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/ROADMAP.md">ROADMAP</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/CONTRIBUTING_ZH.md">CONTRIBUTING_ZH</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/CLAUDE_CODE_PATTERNS_ZH.md">CLAUDE_CODE_PATTERNS_ZH</a>
-              <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/CLAUDE_CODE_PATTERNS.md">CLAUDE_CODE_PATTERNS</a>
-            </div>
-          </article>
-          <article class="card">
-            <h3>Star 趋势</h3>
-            <p>用于观察项目关注度变化（来自公开 Star History 图）。</p>
-            <div class="star">
-              <a href="https://www.star-history.com/#LiuMengxuan04/MiniCode&Date">
-                <img alt="MiniCode Star History" src="https://api.star-history.com/image?repos=LiuMengxuan04/MiniCode&style=landscape1" />
-              </a>
-            </div>
-          </article>
+        <div class="footer-col">
+          <h5 data-i18n="foot_comm">Community</h5>
+          <a href="https://github.com/LiuMengxuan04/MiniCode/blob/main/CONTRIBUTING.md" target="_blank" data-i18n="foot_contrib">Contributing</a>
+          <a href="https://github.com/LiuMengxuan04/MiniCode/issues" target="_blank" data-i18n="foot_report">Report an Issue</a>
         </div>
-      </section>
 
-      <p class="footer">MiniCode Product Page for GitHub Pages · docs/index.html · Maintained with project docs in sync.</p>
-    </main>
-  </body>
+      </div>
+
+      <div style="margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+        <p style="color: var(--text-tertiary); font-size: 0.85rem;" data-i18n="foot_rights">© 2026 MiniCode. MIT Licensed.</p>
+        <a href="https://www.star-history.com/#LiuMengxuan04/MiniCode&Date" target="_blank">
+          <img class="star-img" style="margin-top: 0; max-height: 40px;" alt="MiniCode Star History" src="https://api.star-history.com/image?repos=LiuMengxuan04/MiniCode&style=flat" />
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // I18n Dictionary
+    const i18n = {
+      en: {
+        page_title: "MiniCode | AI-powered terminal coding assistant",
+        nav_features: "Features",
+        nav_arch: "Architecture",
+        nav_roadmap: "Roadmap",
+        nav_github: "GitHub",
+        badge_beta: "MiniCode Beta 1.0 is available",
+        hero_h1: "AI-powered coding assistant <br> built for <em>developers</em>",
+        hero_desc: "Work with large language models directly in your terminal. Build, debug, and ship with an execution loop that keeps you in control. Describe what you need, and MiniCode handles the tools.",
+        btn_github: "View on GitHub",
+        btn_readme: "Read Documentation",
+        t_header_desc: "Terminal coding assistant with a card-style session layout.",
+        t_events: "2 events",
+        t_feed: "session feed",
+        t_role: "assistant",
+        t_hello: "Hello! 👋<br><br>I'm mini-code, your terminal coding assistant. I can help you with:",
+        t_l1: "Inspecting code and repositories",
+        t_l2: "Writing, editing, and modifying files",
+        t_l3: "Running development commands",
+        t_l4: "Generating images (with MiniMax AI)",
+        t_l5: "Working with various file formats (PDF, DOCX, XLSX, PPTX)",
+        t_l6: "Following skill workflows (frontend-dev, fullstack-dev, flutter-dev, etc.)",
+        t_ask: "What would you like to work on today?",
+        t_prompt: "prompt",
+        t_hints: "<strong>prompt</strong> Enter send | /help commands | Esc clear | Ctrl+C exit",
+        t_input: "Ask for code, files, tasks, or MCP tools",
+        t_ready: "Ready",
+        t_tools: "tools <span>on</span> | skills <span>on</span>",
+        tech_strip: "Built with modern architectures",
+        tech_1: "Model-Tool-Loop",
+        tech_2: "Terminal UI",
+        tech_3: "MCP Protocol",
+        tech_4: "Diff Review",
+        tech_5: "Local Skills",
+        why_title: "Why MiniCode?",
+        why_desc: "MiniCode heavily borrows design patterns from Claude Code, stripping away bloated platform features to focus entirely on the core AI-developer interaction loop. It is the perfect fit if you are looking for:",
+        why_1_h: "A lightweight assistant",
+        why_1_p: "Instead of a heavy IDE platform, getting a standalone assistant focused purely on the coding workflow.",
+        why_2_h: "Clean terminal UI",
+        why_2_p: "Native tool calling, transcript scrolling, and complete command workflows without leaving the terminal.",
+        why_3_h: "Readable codebase",
+        why_3_p: "A minimal project structure extremely suitable for reading, secondary development, and private customization.",
+        why_4_h: "Reference architecture",
+        why_4_p: "For learning how modern AI agent loops (like Claude Code) are built under the hood.",
+        feat_title: "Meets you where you code",
+        feat_desc: "A minimalist design focusing on the core tool-calling execution loop, providing safety and high extensibility.",
+        feat_1_title: "Core execution loop",
+        feat_1_desc: "MiniCode manages a full multi-step tool execution loop (<code>model -> tool -> model</code>) in a single turn, providing seamless context processing without leaving the terminal.",
+        feat_1_l1: "Full-screen TUI with transcript scrolling",
+        feat_1_l2: "Separation of progress and final answers",
+        feat_1_l3: "Feedback injection upon rejection",
+        feat_2_title: "You're in control",
+        feat_2_desc: "Safety shouldn't be an afterthought. MiniCode brings permission validation and code review straight into the primary execution pathway.",
+        feat_2_l1: "Standard Unified Diff view before writing",
+        feat_2_l2: "Path and command allowlist verification",
+        feat_2_l3: "Interception of dangerous actions",
+        feat_3_title: "Skills & MCP",
+        feat_3_desc: "Extend capabilities endlessly. MiniCode discovers local <code>SKILL.md</code> instructions and seamlessly mounts stdio Model Context Protocol (MCP) servers.",
+        feat_4_title: "Built-in Toolchain",
+        feat_4_desc: "Local file system management, command execution, and MCP helpers are centralized through a standardized tool protocol, ready to be called by the model at any time.",
+        arch_title: "Architecture",
+        arch_desc: "MiniCode is not a bloated platform. It's a precisely structured codebase centered around the main execution loop.",
+        arch_1_desc: "The core multi-turn tool-calling loop that drives the entire asynchronous conversational logic.",
+        arch_2_desc: "The security sentinel handling path allowlists, command reviews, and intercepting unauthorized writes.",
+        arch_3_desc: "The external connector managing MCP client connections and wrapping remote tool functions for local execution.",
+        arch_4_desc: "A minimal registry separating ephemeral foreground tools from persistent background shell tasks (like dev servers).",
+        foot_desc: "A lightweight terminal coding assistant for local development workflows. Built for learning, experimentation, and high efficiency.",
+        foot_prod: "Product",
+        foot_devs: "Developers",
+        foot_comm: "Community",
+        foot_docs: "Documentation",
+        foot_patterns: "Design Patterns",
+        foot_contrib: "Contributing",
+        foot_report: "Report an Issue",
+        foot_rights: "© 2026 MiniCode. MIT Licensed."
+      },
+      zh: {
+        page_title: "MiniCode | 极简终端 AI 编码助手",
+        nav_features: "核心特性",
+        nav_arch: "架构地图",
+        nav_roadmap: "演进路线",
+        nav_github: "GitHub",
+        badge_beta: "MiniCode Beta 1.0 现已发布",
+        hero_h1: "专为 <em>开发者</em> 构建的<br>终端 AI 助手",
+        hero_desc: "在终端中直接与 LLM 协同工作。把终端助手做「小」，但把核心闭环做「全」：保留核心的 model-tool-loop 和拦截修改流，随时掌控每一次执行。",
+        btn_github: "访问 GitHub",
+        btn_readme: "阅读中文文档",
+        t_header_desc: "采用卡片式会话布局的终端编码助手。",
+        t_events: "2 条事件",
+        t_feed: "会话内容",
+        t_role: "assistant",
+        t_hello: "你好！👋<br><br>我是 mini-code，你的终端编码助手。我可以帮你：",
+        t_l1: "审查代码和工程目录",
+        t_l2: "编写、编辑与修改文件",
+        t_l3: "运行常见的开发命令",
+        t_l4: "生成图像（通过 MiniMax AI）",
+        t_l5: "处理多种文档格式（PDF, DOCX, XLSX, PPTX）",
+        t_l6: "遵循并执行技能流（前端开发、全栈开发、Flutter 开发等）",
+        t_ask: "今天你想开发点什么？",
+        t_prompt: "输入",
+        t_hints: "<strong>输入栏</strong> Enter 发送 | /help 命令列表 | Esc 清空 | Ctrl+C 退出",
+        t_input: "询问代码、文件、任务或 MCP 工具",
+        t_ready: "就绪",
+        t_tools: "工具 <span>已开启</span> | 技能 <span>已开启</span>",
+        tech_strip: "构建于现代架构之上",
+        tech_1: "模型-工具-闭环",
+        tech_2: "TUI 终端界面",
+        tech_3: "MCP 协议扩展",
+        tech_4: "Diff 变更审查",
+        tech_5: "本地工作流指令",
+        why_title: "为什么选择 MiniCode",
+        why_desc: "MiniCode 深度借鉴了 Claude Code 的设计模式，剥离了臃肿的平台级特性，专一地打磨底层 AI 开发者的交互循环。如果你希望得到下面这些东西，MiniCode 会非常合适：",
+        why_1_h: "一个轻量的助手",
+        why_1_p: "而不是庞大的 IDE 平台。一个单纯为 Coding Agent 工作流打造的独立组件。",
+        why_2_h: "干净的终端 UI",
+        why_2_p: "自带原生 Tool calling、对话日志滚动机制和完整的命令执行工作流。",
+        why_3_h: "极具阅读性的代码库",
+        why_3_p: "去芜存菁，结构紧凑。极其适合作为实验基座、二次开发或定制私有助理的地基。",
+        why_4_h: "一个参考级架构实现",
+        why_4_p: "可用于深度学习类似 Claude Code 这种现代 Agent Loop 的底层是如何运转的。",
+        feat_title: "契合你的本地工作流",
+        feat_desc: "极简的架构设计，专注于底层工具调用的执行闭环。摒弃臃肿，保留高扩展性与安全纯粹。",
+        feat_1_title: "核心工作流循环",
+        feat_1_desc: "实现完整的单轮多步工具调用（<code>model -> tool -> model</code>），无需离开终端，无缝提供连续的上下文推理闭环。",
+        feat_1_l1: "全屏 TUI 界面与运行日志滚动",
+        feat_1_l2: "执行过程 (Progress) 与最终结果分离",
+        feat_1_l3: "支持拒绝执行并反馈修正建议给模型",
+        feat_2_title: "安全且可控的边界",
+        feat_2_desc: "安全不能只是附加项。MiniCode 巧妙地将权限验证和代码 Diff 审查置入了主执行链路内，而非外围补丁。",
+        feat_2_l1: "写入代码前展示标准 Unified Diff 进行确认",
+        feat_2_l2: "基于白名单规则的路径与命令审查",
+        feat_2_l3: "从框架底层有效拦截危险操作",
+        feat_3_title: "Skills & MCP 无限扩展",
+        feat_3_desc: "拥抱生态标准。MiniCode 可自动发现 <code>SKILL.md</code> 组织的工作流，并无缝挂载标准的 stdio MCP 服务器，无穷扩展能力边界。",
+        feat_4_title: "内置底层工具链",
+        feat_4_desc: "本地文件系统、Shell 命令行执行以及 MCP 资源辅助，统统收口于标准化的工具调用协议，随时待命响应。",
+        arch_title: "核心架构地图",
+        arch_desc: "MiniCode 不是一个“大而全”的平台。它是一个高度克制、围绕主循环结构化裁剪的极简基座代码库。",
+        arch_1_desc: "多步模型/工具循环引擎，驱动整个终端异步对话交互的心脏。",
+        arch_2_desc: "核心安全哨兵组件。负责处理路径验证、命令限制审查以及写入操作的阻断拦截。",
+        arch_3_desc: "外部能力连接器。管理 MCP Client 的标准连接，并负责将远端工具动态映射封装为本地可调用工具。",
+        arch_4_desc: "极其轻量的任务驻留管理器。有效区分前台的单次工具调用与后台的长效常驻进程（如 Webpack Dev 服务器）。",
+        foot_desc: "面向本地开发工作流的轻量终端 AI 编码助手。专为学习、实验设计与高效能代码创作而构建。",
+        foot_prod: "产品",
+        foot_devs: "开发者",
+        foot_comm: "社区",
+        foot_docs: "架构文档",
+        foot_patterns: "设计模式",
+        foot_contrib: "贡献指南",
+        foot_report: "提交问题反馈",
+        foot_rights: "© 2026 MiniCode. 遵循 MIT 开源协议。"
+      }
+    };
+
+    // Current language state
+    let currentLang = localStorage.getItem('minicode_lang') || 'en';
+
+    // Update UI based on dictionary
+    function updateContent() {
+      const elements = document.querySelectorAll('[data-i18n]');
+      const dict = i18n[currentLang];
+      
+      elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          if (el.hasAttribute('data-html')) {
+            el.innerHTML = dict[key];
+          } else {
+            el.textContent = dict[key];
+          }
+        }
+      });
+      
+      // Update HTML lang attribute
+      document.documentElement.lang = currentLang;
+      
+      // Update toggle button text if needed
+      const btn = document.getElementById('langToggle');
+      if (btn) {
+        btn.textContent = currentLang === 'en' ? 'EN / 中' : '中 / EN';
+      }
+      
+      // Update README link correctly based on language
+      const readmeBtn = document.getElementById('btn_readme');
+      if (readmeBtn) {
+        if (currentLang === 'zh') {
+          readmeBtn.href = "https://github.com/LiuMengxuan04/MiniCode/blob/main/README.zh-CN.md";
+        } else {
+          readmeBtn.href = "https://github.com/LiuMengxuan04/MiniCode/blob/main/README.md";
+        }
+      }
+    }
+
+    // Toggle Language Handler
+    document.getElementById('langToggle').addEventListener('click', () => {
+      currentLang = currentLang === 'en' ? 'zh' : 'en';
+      localStorage.setItem('minicode_lang', currentLang);
+      updateContent();
+    });
+
+    // Navbar Scroll Effect and Initialization
+    document.addEventListener("DOMContentLoaded", () => {
+      // Init Language
+      updateContent();
+
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 20) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+
+      // Intersection Observer for Animations
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            // Unobserve after animating once
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+      document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    });
+  </script>
+</body>
 </html>

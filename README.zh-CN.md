@@ -47,8 +47,8 @@ MiniCode 围绕一个实用的 terminal-first agent loop 构建：
 
 ## 多语言版本
 
-- TypeScript（本仓库）：`https://github.com/LiuMengxuan04/MiniCode`
-- Rust 版本：`https://github.com/harkerhand/MiniCode-rs`
+- TypeScript（本仓库）：[LiuMengxuan04/MiniCode](https://github.com/LiuMengxuan04/MiniCode)
+- Rust 版本：[harkerhand/MiniCode-rs](https://github.com/harkerhand/MiniCode-rs)
 - Python 版本：coming soon
 
 ## 为什么选择 MiniCode

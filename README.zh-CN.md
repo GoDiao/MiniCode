@@ -18,11 +18,13 @@
   一个轻量且高效的编码工具。为速度而生，为简洁而建。
 </p>
 
-[English](./README.md) | [架构说明](./ARCHITECTURE_ZH.md) | [贡献规范](./CONTRIBUTING_ZH.md) | [路线图](./ROADMAP_ZH.md) | [通过 MiniCode 学习 Claude Code 设计](./CLAUDE_CODE_PATTERNS_ZH.md) | [License](./LICENSE)
+[English](./README.md) | [DeepWiki](https://deepwiki.com/LiuMengxuan04/MiniCode) | [架构说明](./ARCHITECTURE_ZH.md) | [贡献规范](./CONTRIBUTING_ZH.md) | [路线图](./ROADMAP_ZH.md) | [通过 MiniCode 学习 Claude Code 设计](./CLAUDE_CODE_PATTERNS_ZH.md) | [License](./LICENSE)
 
 一个面向本地开发工作流的轻量级终端编码助手。
 
 MiniCode 用更小的实现体量，提供了类 Claude Code 的工作流体验和架构思路，因此非常适合学习、实验，以及继续做自己的定制化开发。
+
+您也可以通过 [DeepWiki](https://deepwiki.com/LiuMengxuan04/MiniCode) 了解本项目。
 
 ## 项目简介
 

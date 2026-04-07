@@ -18,11 +18,13 @@
   A lightweight, highly efficient coding tool. Designed for speed, built for simplicity.
 </p>
 
-[简体中文](./README.zh-CN.md) | [Architecture](./ARCHITECTURE.md) | [Contributing](./CONTRIBUTING.md) | [Roadmap](./ROADMAP.md) | [Learn Claude Code Design Through MiniCode](./CLAUDE_CODE_PATTERNS.md) | [License](./LICENSE)
+[简体中文](./README.zh-CN.md) | [DeepWiki](https://deepwiki.com/LiuMengxuan04/MiniCode) | [Architecture](./ARCHITECTURE.md) | [Contributing](./CONTRIBUTING.md) | [Roadmap](./ROADMAP.md) | [Learn Claude Code Design Through MiniCode](./CLAUDE_CODE_PATTERNS.md) | [License](./LICENSE)
 
 A lightweight terminal coding assistant for local development workflows.
 
 MiniCode provides Claude Code-like workflow and architectural ideas in a much smaller implementation, making it especially useful for learning, experimentation, and custom tooling.
+
+You can also explore this project through [DeepWiki](https://deepwiki.com/LiuMengxuan04/MiniCode).
 
 ## Overview
 

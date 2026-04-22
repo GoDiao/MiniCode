@@ -33,7 +33,9 @@ export type RuntimeConfig = {
 
 export type McpConfigScope = 'user' | 'project'
 
-export const MINI_CODE_DIR = path.join(os.homedir(), '.mini-code')
+export const MINI_CODE_DIR = process.env.MINI_CODE_HOME
+  ? path.resolve(process.env.MINI_CODE_HOME)
+  : path.join(os.homedir(), '.mini-code')
 export const MINI_CODE_SETTINGS_PATH = path.join(MINI_CODE_DIR, 'settings.json')
 export const MINI_CODE_HISTORY_PATH = path.join(MINI_CODE_DIR, 'history.json')
 export const MINI_CODE_PERMISSIONS_PATH = path.join(MINI_CODE_DIR, 'permissions.json')

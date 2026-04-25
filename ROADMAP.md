@@ -20,8 +20,9 @@ It includes:
 - provider-reported usage accounting as the primary token source
 - context usage display in the TUI, including whether the value is provider usage, usage plus estimated tail, or estimate-only fallback
 - automatic context compaction for long conversations, triggered from structured accounting totals instead of a bare local estimate
+- large tool-result replacement, where oversized outputs are persisted to disk and only a preview/path remains in the model-visible context
 
-MiniCode now records provider usage on assistant response boundaries and computes context stats from a structured accounting result. The local estimator remains available for providers that do not return usage, offline tests, and tail messages appended after the latest provider usage boundary. Compaction marks retained pre-compact usage stale so the next context calculation does not treat an old response's usage as the current conversation total.
+MiniCode now records provider usage on assistant response boundaries and computes context stats from a structured accounting result. The local estimator remains available for providers that do not return usage, offline tests, and tail messages appended after the latest provider usage boundary. Compaction marks retained pre-compact usage stale so the next context calculation does not treat an old response's usage as the current conversation total. Oversized tool outputs are written to the local MiniCode data directory and replaced with stable preview messages, so long command output no longer dominates context accounting.
 
 This work matters because long-session stability depends on it. It is also one of the most important design areas where MiniCode still trails a more complete Claude Code-style runtime.
 
@@ -114,15 +115,15 @@ The goal is not tool-count parity. The goal is a stronger core toolset while pre
 
 ## P2
 
-### 9. Notebook editing support
+### 10. Notebook editing support
 
 Useful, but not essential for the main terminal coding workflow.
 
-### 10. Built-in web tools
+### 11. Built-in web tools
 
 MiniCode can already extend itself through MCP, so built-in `WebFetch` / `WebSearch` are useful but not the most urgent gap.
 
-### 11. Evaluation and trace infrastructure
+### 12. Evaluation and trace infrastructure
 
 This includes:
 
@@ -132,7 +133,7 @@ This includes:
 
 This is valuable for research and comparison, but it is not on the critical path for the main product loop.
 
-### 12. Prompt caching
+### 13. Prompt caching
 
 Worth exploring later, especially once context accounting and provider integration are more mature.
 

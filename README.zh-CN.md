@@ -46,7 +46,7 @@ MiniCode 围绕一个实用的 terminal-first agent loop 构建：
 
 ## 分支版本特色
 
-- TypeScript 版本：MiniCode 核心工作流、文档和产品展示页的参考实现。更明确的分支特色仍在沉淀中。
+- TypeScript 版本：MiniCode 核心工作流、文档和产品展示页的参考实现，现在已经包含按项目隔离的会话持久化、provider usage 上下文记账、自动压缩和大工具结果落盘替换。
 - Rust 版本：历史记录保存在工作目录内，因此迁移或移动项目位置时，可以更方便地保留当前项目的 MiniCode 上下文。
 - Python 版本：面向 Python 生态的原生实现分支。更明确的分支特色仍在沉淀中。
 
@@ -58,6 +58,7 @@ MiniCode 围绕一个实用的 terminal-first agent loop 构建：
 - [安装](#安装)
 - [快速开始](#快速开始)
 - [命令](#命令)
+- [长会话与上下文管理](#长会话与上下文管理)
 - [配置](#配置)
 - [Skills 与 MCP 用法](#skills-与-mcp-用法)
 - [Star 趋势](#star-趋势)
@@ -90,6 +91,8 @@ MiniCode 围绕一个实用的 terminal-first agent loop 构建：
 - `model -> tool -> model` 闭环
 - 全屏终端交互界面
 - 输入历史、transcript 滚动和 slash 命令菜单
+- 按项目隔离的会话持久化，支持恢复、重命名、分叉和压缩
+- 模型感知的上下文统计，支持 provider usage、tail estimate 和自动压缩
 - 支持通过 `SKILL.md` 发现本地 skills
 - 支持通过 stdio 动态加载 MCP tools
 - 支持通过通用 MCP helper tools 访问 resources 和 prompts
@@ -119,6 +122,7 @@ MiniCode 围绕一个实用的 terminal-first agent loop 构建：
 - 路径和命令权限检查
 - 独立配置目录和交互式安装器
 - 支持 Anthropic 风格接口
+- 超大工具结果会落盘保存，并在上下文里替换成短预览和文件路径，避免长命令输出挤占有效对话空间
 
 ### 最近交互改进
 
@@ -137,6 +141,7 @@ MiniCode 围绕一个实用的 terminal-first agent loop 构建：
 - 澄清问题改为通过 `ask_user` 结构化发问，并在用户回复前暂停当前回合
 - 上下文 token 记账已改为 provider usage 驱动：供应商返回的 usage 会作为 context stats、自动压缩触发、warning/blocking 级别和 TUI context badge 的主要来源；本地估算器只在 provider 未返回 usage 或最新 usage boundary 之后存在新增消息时作为 fallback/tail estimate
 - TUI context badge 会区分真实 usage 和估算 tail，例如 `ctx 82% ... usage+est`；压缩后的会话会把保留下来的旧 usage 标记为 stale，避免把压缩前的 usage 当作当前上下文真实值
+- 大工具结果会持久化到 MiniCode 的本地数据目录，并在模型上下文里替换为预览和文件路径；同一个结果的重复处理会复用替换内容，让 token accounting 保持稳定
 
 ## 安装
 
@@ -251,6 +256,21 @@ CLI 参数：
 - `minicode --fork <id>` — 分叉指定会话并恢复
 
 会话按工作目录隔离，存储在 `~/.mini-code/projects/`，采用追加写入的 JSONL 格式。退出时会打印 session ID，方便后续恢复。超过 30 天的会话会自动清理。
+
+## 长会话与上下文管理
+
+MiniCode 现在把长会话作为一等工作流处理：
+
+- 模型接口返回 provider usage 时，MiniCode 会把它记录在 assistant response boundary 上，并作为 token 记账的主数据源。
+- 如果最新 provider usage boundary 之后又追加了消息，MiniCode 会补充本地 tail estimate，并在 badge 中标记来源，例如 `usage+est`。
+- 如果 provider 不返回 usage，MiniCode 会回退到本地估算，因此离线模式和兼容网关仍然可用。
+- 上下文统计会驱动 TUI badge、warning/blocking 级别和自动压缩触发。
+- `/compact` 会手动压缩上下文，并在会话日志中写入 compact boundary。
+- 当上下文利用率过高时，自动压缩可以总结旧轮次，为后续对话腾出空间。
+- 压缩后，保留下来的压缩前 usage 会被标记为 stale，避免把旧 provider 总量误认为当前上下文大小。
+- 超大工具结果会写入 `~/.mini-code/tool-results/`，并在可见上下文里替换成预览和完整输出路径。单个结果超过 `50_000` 字符会落盘；一批工具结果会被压到约 `200_000` 字符的可见预算内。
+
+会话存储和上下文压缩会一起工作：`loadSession` 会从最近的 compact boundary 之后恢复，而 `loadTranscript` 仍然可以从 JSONL 事件日志重建可见 transcript。
 
 ## 配置
 
@@ -486,6 +506,10 @@ MiniCode 当前主要支持：
 - `src/skills.ts`: 本地 skill 发现与加载
 - `src/mcp.ts`: stdio MCP 客户端与动态工具封装
 - `src/manage-cli.ts`: 顶层 `minicode mcp` / `minicode skills` 管理命令
+- `src/session.ts`: 追加写入的会话 JSONL、恢复/分叉/重命名、compact boundary 和过期清理
+- `src/compact/*`: 手动压缩、自动压缩和对话摘要辅助逻辑
+- `src/utils/token-estimator.ts`: provider usage 优先的上下文记账与本地估算 fallback
+- `src/utils/tool-result-storage.ts`: 大工具输出持久化与预览替换
 - `src/tools/*`: 内置工具集合
 - `src/tui/*`: 终端 UI 模块
 - `src/config.ts`: 运行时配置加载

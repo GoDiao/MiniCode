@@ -259,6 +259,26 @@ CLI flags:
 
 Sessions are scoped per working directory and stored in `~/.mini-code/projects/` using append-only JSONL. On exit, MiniCode prints the session ID so you can resume later. Sessions older than 30 days are automatically cleaned up.
 
+### Layered memory
+
+MiniCode loads instruction files at startup from a three-layer hierarchy:
+
+1. **User global**: `~/.mini-code/MINI.md` (also reads `~/.mini-code/CLAUDE.md` for compatibility)
+2. **Project root and ancestors**: walks upward from cwd, reading `MINI.md`, `MINI.local.md`, `.mini-code/MINI.md`, `CLAUDE.md`, `CLAUDE.local.md`, `.claude/CLAUDE.md` at each level
+3. **Priority**: content closer to cwd takes precedence over broader layers
+
+Files with identical content are deduplicated. Per-file limit is ~8k chars, total limit ~20k chars.
+
+Example `MINI.md`:
+
+```markdown
+# Project Rules
+
+- Use TypeScript strict mode.
+- Run `npm run check` before committing.
+- Keep changes minimal and focused.
+```
+
 ## Long Sessions and Context Management
 
 MiniCode now treats long-running conversations as a first-class workflow:

@@ -6,6 +6,7 @@ import {
   loadRuntimeConfig,
   saveMiniCodeSettings,
 } from './config.js'
+import { initializeRepo, renderInitReport } from './init.js'
 import type { ToolRegistry } from './tool.js'
 
 export type SlashCommand = {
@@ -130,6 +131,11 @@ export const SLASH_COMMANDS: SlashCommand[] = [
     usage: '/compact',
     description: 'Compress conversation context to free up context window space.',
   },
+  {
+    name: '/init',
+    usage: '/init',
+    description: 'Create .mini-code/, .gitignore entries, and MINI.md in the current project (idempotent).',
+  },
 ]
 
 export function formatSlashCommands(): string {
@@ -215,6 +221,11 @@ export async function tryHandleLocalCommand(
       `mcp servers: ${Object.keys(runtime.mcpServers).length}`,
       runtime.sourceSummary,
     ].join('\n')
+  }
+
+  if (input === '/init') {
+    const report = await initializeRepo(process.cwd())
+    return renderInitReport(report)
   }
 
   if (input === '/model') {
